@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="banner" style="background-image: url('{{ url_for('static', filename='banner-history.jpg') }}')">
+    <div class="banner-content">
+        <h1>History</h1>
+        <div class="history-flex">
+            <div class="card history-card">
+                <h2>Rent Prediction</h2>
+                {% for item in rental_history %}
+                <div class="history-row" onclick="toggleDetail('rent', {{item.id}})">
+                    <div class="history-main">
+                        <div class="history-price">RM {{ "%.2f"|format(item.forecast_value) }}</div>
+                        <div class="history-info">{{ item.size }} sqft</div>
+                        <div class="history-detail" id="rent-detail-{{item.id}}" style="display:none;">
+                            <div class="detail-item">
+                                <span class="detail-label">Location:</span>
+                                <span class="detail-value">{{ item.location }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Bedrooms:</span>
+                                <span class="detail-value">{{ item.rooms }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Parking:</span>
+                                <span class="detail-value">{{ item.parking }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Bathrooms:</span>
+                                <span class="detail-value">{{ item.bathroom }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Size:</span>
+                                <span class="detail-value">{{ item.size }} sqft</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Furnished:</span>
+                                <span class="detail-value">{{ item.furnished }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="history-meta">
+                        <span class="history-date">{{ item.forecast_date[:10] }}</span>
+                        <form method="post" action="/delete_rent/{{ item.id }}" class="delete-form" onclick="event.stopPropagation()">
+                            <button type="submit" class="btn-del">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="card history-card">
+                <h2>House Recommend</h2>
+                {% for item in listing_history %}
+                <a href="{{ url_for('recommend', monthly_rent=item.monthly_rent, rooms=item.rooms, furnished=item.furnished) }}" class="history-row-link">
+                    <div class="history-row">
+                        <div class="history-main">
+                            <div class="history-info">
+                                <span><strong>Target Rent:</strong> RM {{ item.monthly_rent }}</span> | 
+                                <span><strong>Bedrooms:</strong> {{ item.rooms }}</span> | 
+                                <span><strong>Furnishing:</strong> {{ item.furnished }}</span>
+                            </div>
+                        </div>
+                        <div class="history-meta">
+                            <span class="history-date">{{ item.recommend_date[:10] }}</span>
+                            <form method="post" action="/delete_listing/{{ item.id }}" class="delete-form" onclick="event.stopPropagation()">
+                                <button type="submit" class="btn-del">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="history-stats" style="margin-top: 6rem;">
+            <span>You have made <b>{{ rental_history|length }}</b> predictions and <b>{{ listing_history|length }}</b> recommendations.</span>
+        </div>
+    </div>
+</div>
+<div class="tips-section">
+    <h3>History Tips</h3>
+    <ul>
+        <li>Click on any card to view detailed information.</li>
+        <li>Use the delete button to remove unwanted records.</li>
+        <li>Your history helps us improve our recommendations.</li>
+    </ul>
+</div>
+<script>
+function toggleDetail(type, id) {
+    var detailDiv = document.getElementById(type + '-detail-' + id);
+    if (detailDiv.style.display === 'none') {
+        detailDiv.style.display = 'block';
+    } else {
+        detailDiv.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="banner" style="background-image: url('{{ url_for('static', filename='banner-recommend.jpg') }}')">
+    <div class="banner-content">
+        <h1>Find Your Perfect Home</h1>
+        <p class="banner-desc">Get personalized rental recommendations.</p>
+        <form method="POST" action="{{ url_for('recommend') }}" class="card form-card">
+            <div class="form-row">
+                <label>Target Monthly Rent</label>
+                <input type="number" name="monthly_rent" min="100" required value="{{ monthly_rent | int if monthly_rent is not none else '' }}">
+            </div>
+            <div class="form-row">
+                <label>Number of Bedrooms</label>
+                <input type="number" name="rooms" min="1" max="10" required value="{{ rooms | int if rooms is not none else '' }}">
+            </div>
+            <div class="form-row">
+                <label>Furnishing Status</label>
+                <select name="furnished" required>
+                    <option value="Unfurnished" {% if furnished == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
+                    <option value="Partially Furnished" {% if furnished == 'Partially Furnished' %}selected{% endif %}>Partially Furnished</option>
+                    <option value="Fully Furnished" {% if furnished == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-main">Get Recommendations</button>
+        </form>
+    </div>
+</div>
+
+<div class="container content-section">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if recommendations %}
+        <h2>Recommended Properties</h2>
+        <div class="recommend-grid">
+            {% for rec in recommendations %}
+            <div class="recommend-card">
+                <div class="recommend-title">{{ rec.prop_name }}</div>
+                <div class="recommend-location">{{ rec.location }}</div>
+                <div class="recommend-details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Rent:</span>
+                        <span class="detail-value">RM {{ rec.monthly_rent }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Size:</span>
+                        <span class="detail-value">{{ rec.size }} sqft</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rooms:</span>
+                        <span class="detail-value">{{ rec.rooms }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Bath:</span>
+                        <span class="detail-value">{{ rec.bathroom }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Parking:</span>
+                        <span class="detail-value">{{ rec.parking }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Furnishing:</span>
+                        <span class="detail-value">{{ rec.furnished }}</span>
+                    </div>
+                </div>
+                <div class="recommend-extra-info">
+                    <div class="detail-item">
+                        <span class="detail-label">Facilities:</span>
+                        <span class="detail-value">{{ rec.facilities | default('N/A') }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Additional Facilities:</span>
+                        <span class="detail-value">{{ rec.additional_facilities | default('N/A') }}</span>
+                    </div>
+                </div>
+                <div class="rec-actions">
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ rec.prop_name | urlencode }}" class="btn-map" target="_blank"> Map</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% elif monthly_rent is not none or rooms is not none or furnished is not none %}
+        <p>No recommendations found for the given criteria. Please try adjusting your input.</p>
+    {% else %}
+        <p>Enter your preferences above to get personalized rental recommendations.</p>
+    {% endif %}
+</div>
+
+<div class="tips-section">
+    <h3>Finding Your Perfect House</h3>
+    <ul>
+        <li>Consider your daily commute and proximity to essential amenities.</li>
+        <li>Check the neighborhood's safety and accessibility.</li>
+        <li>Verify all facilities mentioned in the property description.</li>
+        <li>Compare similar properties in the same area for better value.</li>
+    </ul>
+</div>
+
+{% endblock %}

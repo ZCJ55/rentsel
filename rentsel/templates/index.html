@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="banner" style="background-image:url('{{ url_for('static', filename='banner-home.jpg') }}')">
+    <div class="banner-content">
+        <h1>Smart Rent Prediction</h1>
+        <p class="banner-desc">AI-powered rent estimation for your next home.</p>
+        <form method="post" class="card form-card">
+            <div class="form-row">
+                <label>Location</label>
+                <select name="location" required>
+                    <option value="" disabled {% if loc is none %}selected{% endif %}>Select Address</option>
+                    {% for loc_option in locations %}
+                    <option value="{{ loc_option }}" {% if loc == loc_option %}selected{% endif %}>{{ loc_option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Area Size (sqft)</label>
+                <input type="number" name="size" min="100" required value="{{ size if size is not none else '' }}">
+            </div>
+            <div class="form-row">
+                <label>Bedrooms</label>
+                <input type="number" name="rooms" min="1" max="10" required value="{{ rooms if rooms is not none else '' }}">
+            </div>
+            <div class="form-row">
+                <label>Bathrooms</label>
+                <input type="number" name="bathroom" min="1" max="10" required value="{{ bathroom if bathroom is not none else '' }}">
+            </div>
+            <div class="form-row">
+                <label>Parking Spots</label>
+                <input type="number" name="parking" min="0" max="10" required value="{{ parking if parking is not none else '' }}">
+            </div>
+            <div class="form-row">
+                <label>Furnishing</label>
+                <select name="furnished" required>
+                    <option value="Unfurnished" {% if furnished == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
+                    <option value="Partially Furnished" {% if furnished == 'Partially Furnished' %}selected{% endif %}>Partially Furnished</option>
+                    <option value="Fully Furnished" {% if furnished == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-main">Predict</button>
+            {% if prediction %}
+            <div class="result-prediction animate-pop">
+                <span class="result-label">Predicted Rent:</span>
+                <span class="result-value">{{ prediction }}</span>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+<div class="tips-section">
+    <h3>Renting Tips</h3>
+    <ul>
+        <li>Always visit the property in person before signing.</li>
+        <li>Compare prices in the same area.</li>
+        <li>Read the contract carefully and check for hidden fees.</li>
+    </ul>
+</div>
+{% endblock %}
